@@ -116,13 +116,19 @@ if question:
 
     try:
         with st.spinner("Consulting AI..."):
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You're a financial assistant who considers both Reddit sentiment and GARCH volatility to provide market insight."},
-                    {"role": "user", "content": f"{question}. {sentiment_text} {vol_text}"}
-                ]
-            )
+           from openai import OpenAI
+
+client = OpenAI()
+
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": "You're a financial assistant..."},
+        {"role": "user", "content": f"{question}. {sentiment_text} {vol_text}"}
+    ]
+)
+
+st.success(response.choices[0].message.content)
             st.success(response.choices[0].message.content)
     except Exception as e:
         st.warning(f"OpenAI Error: {e}")
