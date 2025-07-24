@@ -65,6 +65,8 @@ def run_garch(price_series):
 with st.spinner("Fetching stock price data..."):
     price_data = get_price_data(ticker, days_back)
     # Fix MultiIndex column names returned by yfinance
+st.write("Price data columns:", price_data.columns.tolist())
+st.dataframe(price_data.head())
 if isinstance(price_data.columns, pd.MultiIndex):
     price_data.columns = [' '.join(col).strip() for col in price_data.columns.values]
 
