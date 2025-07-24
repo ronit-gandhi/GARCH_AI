@@ -15,7 +15,8 @@ import openai
 REDDIT_CLIENT_ID = "your_new_id"
 REDDIT_SECRET = "your_new_secret"
 REDDIT_USER_AGENT = "RedRiskAI"
-OPENAI_API_KEY = "your_new_openai_key"openai.api_key = OPENAI_API_KEY
+OPENAI_API_KEY = "your_new_openai_key"
+openai.api_key = OPENAI_API_KEY
 
 # --- SETUP ---
 st.set_page_config(page_title="RedRisk AI", layout="wide")
