@@ -108,12 +108,14 @@ with col2:
 # --- AI COPILOT ---
 import openai
 
+# Set your OpenAI API key from secrets
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 st.subheader("🤖 AI Copilot Advice")
 question = st.text_input("Ask a question about this stock:", value=f"Should I buy {ticker}?")
 
 if question:
+    # Safely define sentiment and volatility summaries
     sentiment_text = f"Here is the Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data is unavailable."
     vol_text = f"Here is the volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
 
