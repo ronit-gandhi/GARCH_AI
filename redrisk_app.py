@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import praw
 from transformers import pipeline
 from arch import arch_model
-import openai
+from transformers import pipeline
 
 # --- API KEYS ---
 REDDIT_CLIENT_ID = st.secrets["REDDIT_CLIENT_ID"]
@@ -119,22 +119,15 @@ if question:
     sentiment_text = f"Here is the Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data is unavailable."
     vol_text = f"Here is the volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
 
-    try:
-        with st.spinner("Consulting AI..."):
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You're a financial assistant who considers both Reddit sentiment and GARCH volatility to provide market insight."
-                    },
-                    {
-                        "role": "user",
-                        "content": f"{question}. {sentiment_text} {vol_text}"
-                    }
-                ]
-            )
-            st.success(response.choices[0].message.content)
+if question:
+    with st.spinner("Thinking..."):
+        try:
+            # Use a simple language generation pipeline
+            qa_pipeline = pipeline("text-generation", model="gpt2")
+            prompt = f"{question} Reddit sentiment: {score if 'score' in locals() else 'Unknown'}. Volatility: {forecast.variance.iloc[-1].values if 'forecast' in locals() else 'Unknown'}."
 
-    except Exception as e:
-        st.warning(f"OpenAI Error: {e}")
+            response = qa_pipeline(prompt, max_length=100, do_sample=True)[0]['generated_text']
+            st.success(response)
+
+        except Exception as e:
+            st.warning(f"Local AI Error: {e}")
