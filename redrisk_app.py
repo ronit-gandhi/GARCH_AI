@@ -74,9 +74,6 @@ if 'Close' not in price_data.columns:
     st.error("No 'Close' column found in price data. Try a different ticker.")
     st.stop()
 
-# 🧪 Optional Debug: See what data came in
-st.write("Final columns:", price_data.columns.tolist())
-st.dataframe(price_data.head())
 
 # 📈 Display the line chart
 st.line_chart(price_data['Close'], use_container_width=True)
