@@ -9,12 +9,12 @@ from datetime import datetime, timedelta
 import praw
 from transformers import pipeline
 from arch import arch_model
-from transformers import pipeline
 
 # --- API KEYS ---
 REDDIT_CLIENT_ID = st.secrets["REDDIT_CLIENT_ID"]
 REDDIT_SECRET = st.secrets["REDDIT_SECRET"]
 REDDIT_USER_AGENT = st.secrets["REDDIT_USER_AGENT"]
+
 # --- SETUP ---
 st.set_page_config(page_title="RedRisk AI", layout="wide")
 st.title("📊 RedRisk AI – Real-Time Reddit Sentiment & Financial Risk Analysis")
@@ -61,18 +61,13 @@ def run_garch(price_series):
 # --- PRICE CHART ---
 with st.spinner("Fetching stock price data..."):
     price_data = get_price_data(ticker, days_back)
-    # Fix MultiIndex column names returned by yfinance
-# 📊 Fix: Flatten MultiIndex columns to use just the price type (e.g., 'Close')
-if isinstance(price_data.columns, pd.MultiIndex):
-    price_data.columns = price_data.columns.get_level_values(0)
+    if isinstance(price_data.columns, pd.MultiIndex):
+        price_data.columns = price_data.columns.get_level_values(0)
 
-# ✅ Check if 'Close' exists (fallback when 'Adj Close' is missing)
 if 'Close' not in price_data.columns:
     st.error("No 'Close' column found in price data. Try a different ticker.")
     st.stop()
 
-
-# 📈 Display the line chart
 st.line_chart(price_data['Close'], use_container_width=True)
 
 # --- REDDIT + SENTIMENT ---
@@ -102,25 +97,19 @@ with col2:
     except Exception as e:
         st.warning(f"GARCH Error: {e}")
 
-# --- AI COPILOT ---
-
+# --- AI COPILOT (Transformer-based Local) ---
 st.subheader("🤖 AI Copilot Advice")
 question = st.text_input("Ask a question about this stock:", value=f"Should I buy {ticker}?")
 
 if question:
-    # Safely define sentiment and volatility summaries
-    sentiment_text = f"Here is the Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data is unavailable."
-    vol_text = f"Here is the volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
+    sentiment_text = f"Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data unavailable."
+    vol_text = f"Volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
 
-if question:
-    with st.spinner("Thinking..."):
-        try:
-            # Use a simple language generation pipeline
-            qa_pipeline = pipeline("text-generation", model="gpt2")
-            prompt = f"{question} Reddit sentiment: {score if 'score' in locals() else 'Unknown'}. Volatility: {forecast.variance.iloc[-1].values if 'forecast' in locals() else 'Unknown'}."
-
-            response = qa_pipeline(prompt, max_length=100, do_sample=True)[0]['generated_text']
-            st.success(response)
-
-        except Exception as e:
-            st.warning(f"Local AI Error: {e}")
+    try:
+        with st.spinner("Generating AI response..."):
+            qa_pipeline = pipeline("text2text-generation", model="google/flan-t5-base")
+            full_prompt = f"{question}. {sentiment_text} {vol_text}"
+            response = qa_pipeline(full_prompt)
+            st.success(response[0]['generated_text'])
+    except Exception as e:
+        st.warning(f"AI Error: {e}")
