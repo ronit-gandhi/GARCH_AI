@@ -3,5 +3,5 @@ yfinance
 praw
 arch
 transformers
-openai
 torch
+openai==0.28
