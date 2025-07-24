@@ -65,19 +65,21 @@ def run_garch(price_series):
 with st.spinner("Fetching stock price data..."):
     price_data = get_price_data(ticker, days_back)
     # Fix MultiIndex column names returned by yfinance
-st.write("Price data columns:", price_data.columns.tolist())
-st.dataframe(price_data.head())
+# 📊 Fix: Flatten MultiIndex columns to use just the price type (e.g., 'Close')
 if isinstance(price_data.columns, pd.MultiIndex):
-    price_data.columns = [' '.join(col).strip() for col in price_data.columns.values]
+    price_data.columns = price_data.columns.get_level_values(0)
 
-# Safety check for 'Adj Close'
-if 'Adj Close' not in price_data.columns:
-    st.error("Could not find 'Adj Close' in price data. Try a different ticker.")
+# ✅ Check if 'Close' exists (fallback when 'Adj Close' is missing)
+if 'Close' not in price_data.columns:
+    st.error("No 'Close' column found in price data. Try a different ticker.")
     st.stop()
-if price_data is None or price_data.empty:
-    st.error("No price data found. Try a different ticker.")
-    st.stop()
-st.line_chart(price_data['Adj Close'], use_container_width=True)
+
+# 🧪 Optional Debug: See what data came in
+st.write("Final columns:", price_data.columns.tolist())
+st.dataframe(price_data.head())
+
+# 📈 Display the line chart
+st.line_chart(price_data['Close'], use_container_width=True)
 
 # --- REDDIT + SENTIMENT ---
 col1, col2 = st.columns(2)
