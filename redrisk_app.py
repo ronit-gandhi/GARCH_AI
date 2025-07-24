@@ -106,7 +106,7 @@ with col2:
         st.warning(f"GARCH Error: {e}")
 
 # --- AI COPILOT ---
-from openai import OpenAI
+import openai
 
 st.subheader("🤖 AI Copilot Advice")
 question = st.text_input("Ask a question about this stock:", value=f"Should I buy {ticker}?")
@@ -117,9 +117,7 @@ if question:
 
     try:
         with st.spinner("Consulting AI..."):
-            client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
                     {
@@ -132,8 +130,7 @@ if question:
                     }
                 ]
             )
-
-            st.success(response.choices[0].message.content)
+            st.success(response["choices"][0]["message"]["content"])
 
     except Exception as e:
         st.warning(f"OpenAI Error: {e}")
