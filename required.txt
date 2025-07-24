@@ -1,0 +1,6 @@
+streamlit
+yfinance
+praw
+arch
+transformers
+openai
