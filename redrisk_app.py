@@ -111,17 +111,20 @@ with col2:
 # --- AI COPILOT ---
 st.subheader("🤖 AI Copilot Advice")
 question = st.text_input("Ask a question about this stock:", value=f"Should I buy {ticker}?")
+
 if question:
+    # Safely define input strings
+    sentiment_text = f"Here is the Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data is unavailable."
+    vol_text = f"Here is the volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
+
     try:
         with st.spinner("Consulting AI..."):
             response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You're a financial assistant who considers both Reddit sentiment and GARCH volatility to provide market insight."},
-sentiment_text = f"Here is the Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data is unavailable."
-vol_text = f"Here is the volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
-
-{"role": "user", "content": f"{question}. {sentiment_text} {vol_text}"}                ]
+                    {"role": "user", "content": f"{question}. {sentiment_text} {vol_text}"}
+                ]
             )
             st.success(response.choices[0].message.content)
     except Exception as e:
