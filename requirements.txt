@@ -4,4 +4,3 @@ praw
 arch
 transformers
 torch
-openai==0.28
