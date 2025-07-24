@@ -64,6 +64,14 @@ def run_garch(price_series):
 # --- PRICE CHART ---
 with st.spinner("Fetching stock price data..."):
     price_data = get_price_data(ticker, days_back)
+    # Fix MultiIndex column names returned by yfinance
+if isinstance(price_data.columns, pd.MultiIndex):
+    price_data.columns = [' '.join(col).strip() for col in price_data.columns.values]
+
+# Safety check for 'Adj Close'
+if 'Adj Close' not in price_data.columns:
+    st.error("Could not find 'Adj Close' in price data. Try a different ticker.")
+    st.stop()
 if price_data is None or price_data.empty:
     st.error("No price data found. Try a different ticker.")
     st.stop()
