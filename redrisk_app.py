@@ -12,9 +12,9 @@ from arch import arch_model
 import openai
 
 # --- API KEYS ---
-REDDIT_CLIENT_ID = "your_new_id"
-REDDIT_SECRET = "your_new_secret"
-REDDIT_USER_AGENT = "RedRiskAI"
+REDDIT_CLIENT_ID = st.secrets["REDDIT_CLIENT_ID"]
+REDDIT_SECRET = st.secrets["REDDIT_SECRET"]
+REDDIT_USER_AGENT = st.secrets["REDDIT_USER_AGENT"]
 OPENAI_API_KEY = "your_new_openai_key"
 openai.api_key = OPENAI_API_KEY
 
@@ -102,7 +102,7 @@ with col1:
 with col2:
     st.subheader("📉 GARCH Risk Modeling")
     try:
-        res, forecast = run_garch(price_data['Adj Close'])
+        res, forecast = run_garch(price_data['Close'])
         st.write("Last 5-day volatility forecast:", forecast.variance.iloc[-1].values)
         st.line_chart(res.conditional_volatility)
     except Exception as e:
@@ -118,8 +118,10 @@ if question:
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You're a financial assistant who considers both Reddit sentiment and GARCH volatility to provide market insight."},
-                    {"role": "user", "content": f"{question}. Here is the Reddit sentiment: {score}. Here is the volatility: {forecast.variance.iloc[-1].values}."}
-                ]
+sentiment_text = f"Here is the Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data is unavailable."
+vol_text = f"Here is the volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
+
+{"role": "user", "content": f"{question}. {sentiment_text} {vol_text}"}                ]
             )
             st.success(response.choices[0].message.content)
     except Exception as e:
