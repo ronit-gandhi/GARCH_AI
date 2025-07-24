@@ -15,9 +15,6 @@ from transformers import pipeline
 REDDIT_CLIENT_ID = st.secrets["REDDIT_CLIENT_ID"]
 REDDIT_SECRET = st.secrets["REDDIT_SECRET"]
 REDDIT_USER_AGENT = st.secrets["REDDIT_USER_AGENT"]
-OPENAI_API_KEY = "your_new_openai_key"
-openai.api_key = OPENAI_API_KEY
-
 # --- SETUP ---
 st.set_page_config(page_title="RedRisk AI", layout="wide")
 st.title("📊 RedRisk AI – Real-Time Reddit Sentiment & Financial Risk Analysis")
