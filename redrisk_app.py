@@ -106,6 +106,9 @@ with col2:
         st.warning(f"GARCH Error: {e}")
 
 # --- AI COPILOT ---
+import openai
+
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 st.subheader("🤖 AI Copilot Advice")
 question = st.text_input("Ask a question about this stock:", value=f"Should I buy {ticker}?")
@@ -129,7 +132,7 @@ if question:
                     }
                 ]
             )
-            st.success(response["choices"][0]["message"]["content"])
+            st.success(response.choices[0].message.content)
 
     except Exception as e:
         st.warning(f"OpenAI Error: {e}")
