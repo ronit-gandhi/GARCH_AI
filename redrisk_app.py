@@ -106,7 +106,6 @@ with col2:
         st.warning(f"GARCH Error: {e}")
 
 # --- AI COPILOT ---
-import openai
 
 st.subheader("🤖 AI Copilot Advice")
 question = st.text_input("Ask a question about this stock:", value=f"Should I buy {ticker}?")
