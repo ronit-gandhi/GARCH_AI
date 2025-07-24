@@ -12,11 +12,10 @@ from arch import arch_model
 import openai
 
 # --- API KEYS ---
-REDDIT_CLIENT_ID = "BookkeeperOk1990"
-REDDIT_SECRET = "CXkEHpeKeXau96qYefRCLQzdYJ11eA"
+REDDIT_CLIENT_ID = "your_new_id"
+REDDIT_SECRET = "your_new_secret"
 REDDIT_USER_AGENT = "RedRiskAI"
-OPENAI_API_KEY = "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"
-openai.api_key = OPENAI_API_KEY
+OPENAI_API_KEY = "your_new_openai_key"openai.api_key = OPENAI_API_KEY
 
 # --- SETUP ---
 st.set_page_config(page_title="RedRisk AI", layout="wide")
