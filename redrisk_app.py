@@ -122,7 +122,7 @@ if question:
     try:
         with st.spinner("Consulting AI..."):
             response = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "system",
