@@ -106,29 +106,34 @@ with col2:
         st.warning(f"GARCH Error: {e}")
 
 # --- AI COPILOT ---
+from openai import OpenAI
+
 st.subheader("🤖 AI Copilot Advice")
 question = st.text_input("Ask a question about this stock:", value=f"Should I buy {ticker}?")
 
 if question:
-    # Safely define input strings
     sentiment_text = f"Here is the Reddit sentiment: {score}" if 'score' in locals() else "Sentiment data is unavailable."
     vol_text = f"Here is the volatility: {forecast.variance.iloc[-1].values}" if 'forecast' in locals() else "Volatility data unavailable."
 
     try:
         with st.spinner("Consulting AI..."):
-           from openai import OpenAI
+            client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-client = OpenAI()
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You're a financial assistant who considers both Reddit sentiment and GARCH volatility to provide market insight."
+                    },
+                    {
+                        "role": "user",
+                        "content": f"{question}. {sentiment_text} {vol_text}"
+                    }
+                ]
+            )
 
-response = client.chat.completions.create(
-    model="gpt-4",
-    messages=[
-        {"role": "system", "content": "You're a financial assistant..."},
-        {"role": "user", "content": f"{question}. {sentiment_text} {vol_text}"}
-    ]
-)
-
-st.success(response.choices[0].message.content)
             st.success(response.choices[0].message.content)
+
     except Exception as e:
         st.warning(f"OpenAI Error: {e}")
